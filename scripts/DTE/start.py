@@ -16,7 +16,8 @@ def startProcess(driver):
     
     #Só volta a executar quando finalizar de selecionar o certificado digital, ele aguarda o elemento da lista de empresas aparecerem.
     locateByXpath(driver, 200, '/html/body/my-app/div/div/div/app-perfil/div/div[1]/table/thead')
-        
+    
+    #Seleciona a opção contador
     profile = locateByXpath(driver, 30, '/html/body/my-app/div/div/div/app-perfil/div/div[1]/table/tbody/tr/td[1]')
     profile.click()
         
