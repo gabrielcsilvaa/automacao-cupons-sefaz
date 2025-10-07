@@ -73,13 +73,12 @@ def openMainPage(lastPage):
     # Cria a nova janela principal
     mainPage = ctk.CTk()
     mainPage.title("Main Page")
-    mainPage.geometry("1280x720")
+    mainPage.state("zoomed")
     mainPage.configure(fg_color="#25412D")
 
 
-
-    mainPage_frame = ctk.CTkFrame(mainPage, width=1200, height=600, corner_radius=20,fg_color="transparent")
-    mainPage_frame.pack(fill="both", expand=True, padx=20, pady=20)
+    mainPage_frame = ctk.CTkFrame(mainPage,corner_radius=0 ,fg_color="transparent")
+    mainPage_frame.pack(fill="both", expand=True, padx=0, pady=0)
     
 
 #------------------------------------------------------------------#
