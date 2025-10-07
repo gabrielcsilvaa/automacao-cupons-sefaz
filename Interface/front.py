@@ -16,7 +16,7 @@ ctk.set_default_color_theme("green")  # Tema de cores (pode personalizar depois)
 # Janela principal
 root = ctk.CTk()
 root.title("Login")
-root.geometry("1280x720")
+root.geometry("1920x1080")
 root.configure(fg_color="#f5f5f5")  # Cor de fundo clara
 def startInterface():
     openMainPage(root)
