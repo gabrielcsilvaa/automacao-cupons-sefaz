@@ -17,6 +17,7 @@ def cfeQuery(driver, cfe):
     except Exception as e:
         print("Timeout: o elemento não adquiriu a classe 'ng-hide' dentro do tempo esperado.")
         
+    time.sleep(2)
     # Encontre a quarta <li> dentro da ul com o id 'menulist_root'
     fourth_li = driver.find_element(By.XPATH, '//*[@id="menulist_root"]/li[4]')
     time.sleep(1)
