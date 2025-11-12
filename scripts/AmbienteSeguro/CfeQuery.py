@@ -17,19 +17,18 @@ def cfeQuery(driver, cfe):
     except Exception as e:
         print("Timeout: o elemento não adquiriu a classe 'ng-hide' dentro do tempo esperado.")
         
-    time.sleep(2)
+    time.sleep(3)
     # Encontre a quarta <li> dentro da ul com o id 'menulist_root'
-    fourth_li = driver.find_element(By.XPATH, '//*[@id="menulist_root"]/li[4]')
+    fourth_li = driver.find_element(By.XPATH, '//*[@id="menulist_root"]/li[3]')
     time.sleep(1)
 
     # Agora encontre o link <a> dentro desse quarto <li>
-    link = fourth_li.find_element(By.XPATH, '/html/body/div[3]/div[2]/div[1]/div/div/ul/li[5]/a')
-    
-    
+    link = fourth_li.find_element(By.XPATH, '/html/body/div[3]/div[2]/div[1]/div/div/ul/li[3]/a') # localizando o link dentro da li nfce
+
     link.click()
     time.sleep(0.5)
     
-    cfekey = locateByXpath(driver, 30 , '//*[@id="cfeKey"]')
+    cfekey = locateByXpath(driver, 30 , '//*[@id="nfceKey"]')
     
     cfekey.clear()
     time.sleep(0.2)
@@ -38,15 +37,15 @@ def cfeQuery(driver, cfe):
     
     
     #Clica no botão consultar.
-    queryButton = locateByXpath(driver, 30, '//*[@id="conteudo_central"]/div/div/div/div[3]/form/div[6]/div/div/button[1]')
+    queryButton = locateByXpath(driver, 30, '//*[@id="conteudo_central"]/div/div/div/div[3]/form/div[5]/div/div/button[1]')
     
     queryButton.click()
     
     # Tenta encontrar o link 'a' na coluna específica
-    xmlLink = locateByXpath(driver, 30, '//*[@id="table-search-coupons"]/tbody/tr/td[4]/a')
+    xmlLink = locateByXpath(driver, 30, '//*[@id="table-search-coupons"]/tbody/tr/td[4]')
     xmlLink.click()
 
-    download = locateByXpath(driver, 30, '//*[@id="conteudo_central"]/div/div[2]/div/div/div[3]/button[3]')
+    download = locateByXpath(driver, 30, '//*[@id="conteudo_central"]/div/div[2]/div/div/div[3]/button')
     download.click()
     
     fechar = WebDriverWait(driver, 10).until(

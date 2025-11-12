@@ -40,11 +40,11 @@ def downloadCsvAut(driver):
     )
     
     # VERIFICA SE EXISTE UM VALOR NA TABELA
-    tableValue = findElementByXpath(driver, '//*[@id="tab_emitidos"]/table/tbody[1]/tr/td[3]/div')
+    tableValue = findElementByXpath(driver, '//*[@id="tab_emitidos"]/table/tbody[1]/tr/td[5]') #mudei para analisar a td do nfce em vez do cfe
     
     if(tableValue.text != '0,00'):
         
-        valueLink = locateByXpath(driver, 500, '//*[@id="tab_emitidos"]/table/tbody[1]/tr/td[3]/div/a')
+        valueLink = locateByXpath(driver, 500, '//*[@id="tab_emitidos"]/table/tbody[1]/tr/td[5]/div/a')# mudei para clicar no nfce valor
         time.sleep(2)          
         valueLink.click()
 
