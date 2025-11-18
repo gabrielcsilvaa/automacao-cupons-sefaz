@@ -23,4 +23,4 @@ def readCSV(directory, lista):
         
         print('Foram encontrados ', len(chave_de_acesso_list), ' Cupons ', lista)
     else:
-        print(f"A coluna {coluna} não foi encontrada no CSV.")  
+        print(f"A coluna {coluna} não foi encontrada no CSV.")

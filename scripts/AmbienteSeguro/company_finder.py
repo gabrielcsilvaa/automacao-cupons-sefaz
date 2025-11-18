@@ -27,4 +27,4 @@ def company_finder_AmbSeg(driver, companyCode):
             print('Inscrição estadual: ',cellText,' Empresa: ', textName)
             break
     
-    time.sleep(2)    
+    time.sleep(2)

@@ -19,11 +19,11 @@ def cfeQuery(driver, cfe):
         
     time.sleep(3)
     # Encontre a quarta <li> dentro da ul com o id 'menulist_root'
-    fourth_li = driver.find_element(By.XPATH, '//*[@id="menulist_root"]/li[3]')
+    fourth_li = driver.find_element(By.XPATH, '//*[@id="menulist_root"]/li[3]') # agora achando a li do nfce 
     time.sleep(1)
 
     # Agora encontre o link <a> dentro desse quarto <li>
-    link = fourth_li.find_element(By.XPATH, '/html/body/div[3]/div[2]/div[1]/div/div/ul/li[3]/a') # localizando o link dentro da li nfce
+    link = fourth_li.find_element(By.XPATH, '/html/body/div[3]/div[2]/div[1]/div/div/ul/li[3]/a') # localizando o link <a> dentro da li nfce
 
     link.click()
     time.sleep(0.5)
@@ -41,7 +41,7 @@ def cfeQuery(driver, cfe):
     
     queryButton.click()
     
-    # Tenta encontrar o link 'a' na coluna específica
+    # Tenta encontrar o link 'a' na coluna para selecionar o negocio azul da  nota da nfce 
     xmlLink = locateByXpath(driver, 30, '//*[@id="table-search-coupons"]/tbody/tr/td[4]')
     xmlLink.click()
 
@@ -51,4 +51,4 @@ def cfeQuery(driver, cfe):
     fechar = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.CLASS_NAME, 'close'))
     )
-    fechar.click()
+    fechar.click() # tudo alterado
