@@ -8,7 +8,7 @@ from utils.Validate_CPF import validate_cpf
 from auth.validateAcess import authorize_access
 
 
-def openMainPage(lastPage):
+def openMainPage(root):
     acessValidator = authorize_access()
 
     if acessValidator == False:
@@ -35,7 +35,7 @@ def openMainPage(lastPage):
         app_state.set_data(inscricao_estadual, mes, ano, tipo)
         app_state.autorizationNext(True)
 
-        mainPage.destroy()
+        root.destroy()
 
     def check_and_save():
 
@@ -82,60 +82,75 @@ def openMainPage(lastPage):
         save_and_close()
 
     # --------------------------------------- #
-    # JANELA PRINCIPAL
+    # CONFIGURAÇÃO DA JANELA ROOT
     # --------------------------------------- #
 
-    lastPage.destroy()
+    root.title("Main Page")
+    root.state("zoomed")
+    root.configure(fg_color="#25412D")
 
-    mainPage = ctk.CTk()
-    mainPage.title("Main Page")
-    mainPage.state("zoomed")
-    mainPage.configure(fg_color="#25412D")
+    # limpa tudo antes de montar
+    for widget in root.winfo_children():
+        widget.destroy()
 
-    mainPage_frame = ctk.CTkFrame(mainPage, corner_radius=0, fg_color="transparent")
-    mainPage_frame.pack(fill="both", expand=True, padx=0, pady=0)
+    # ==========================
+    #  FRAME PRINCIPAL (duas colunas)
+    # ==========================
+    mainPage_frame = ctk.CTkFrame(root, corner_radius=0, fg_color="transparent")
+    mainPage_frame.pack(fill="both", expand=True)
 
-    # ------------------------------------------------------------------ #
-    # LADO ESQUERDO (AGORA SCROLLÁVEL)
-    # ------------------------------------------------------------------ #
-
-    # Container com scroll para o lado esquerdo
+    # ==========================
+    #  LADO ESQUERDO (com scroll)
+    # ==========================
     left_scroll = ctk.CTkScrollableFrame(
         mainPage_frame,
-        fg_color="transparent"
+        fg_color="transparent",
+        width=500  # largura fixa para NÃO estourar layout
     )
-    left_scroll.pack(side="left", fill="both", expand=True, padx=20, pady=20)
+    left_scroll.pack(side="left", fill="y", padx=30, pady=20)
 
-    # Frame interno onde ficam os campos (igual ao seu antigo MainLeft_frame)
     MainLeft_frame = ctk.CTkFrame(left_scroll, fg_color="transparent")
     MainLeft_frame.pack(fill="both", expand=True)
 
-    # ------------------------------------------------------------------ #
-    # LADO DIREITO (LOGO) — igual ao original
-    # ------------------------------------------------------------------ #
-
-    MainRight_frame = ctk.CTkFrame(mainPage_frame, fg_color="transparent")
+    # ==========================
+    #  LADO DIREITO (LOGO)
+    # ==========================
+    MainRight_frame = ctk.CTkFrame(
+        mainPage_frame,
+        fg_color="transparent",
+        width=900   # largura boa para o logo
+    )
     MainRight_frame.pack(side="right", fill="both", expand=True, padx=20, pady=20)
 
-    logo_frame = ctk.CTkFrame(MainRight_frame, width=550, height=500, corner_radius=100, fg_color="white")
-    logo_frame.pack(side="right", fill="both", expand=True)
+    logo_frame = ctk.CTkFrame(
+        MainRight_frame,
+        width=900,
+        height=700,
+        corner_radius=60,
+        fg_color="white"
+    )
+    logo_frame.pack(fill="both", expand=True)
     logo_frame.pack_propagate(False)
 
     try:
-        logo_image = ctk.CTkImage(dark_image=Image.open("logo.png"), size=(500, 500))
+        logo_image = ctk.CTkImage(
+            dark_image=Image.open("logo.png"),
+            size=(600, 600)
+        )
         logo_label = ctk.CTkLabel(logo_frame, image=logo_image, text="")
         logo_label.pack(expand=True)
     except:
         logo_label = ctk.CTkLabel(
             logo_frame,
             text="BUSINESS PRO\nCONTÁBIL",
-            font=("Arial", 24, "bold"),
+            font=("Arial", 40, "bold"),
             text_color="#1e3d2f"
         )
         logo_label.pack(expand=True)
 
+
     # ------------------------------------------------------------------ #
-    # CAMPOS DO LADO ESQUERDO (layout original, só com paddings menores)
+    # CAMPOS DO LADO ESQUERDO
     # ------------------------------------------------------------------ #
 
     # ---------- TÍTULO LOGIN ----------
@@ -282,7 +297,6 @@ def openMainPage(lastPage):
     )
     TipoLabel.pack(anchor="w", pady=(0, 10))
 
-    # Variável global do tipo selecionado
     tipo_var = ctk.StringVar(value="CFE")  # default CFE
 
     def selecionar_cfe():
@@ -303,7 +317,7 @@ def openMainPage(lastPage):
 
     cupom_cfe = ctk.CTkCheckBox(
         tipo_frame,
-        text="CFE",
+        text="CFE (Cupom Fiscal Eletrônico)",
         font=("Consolas", 16),
         text_color="white",
         onvalue=1,
@@ -315,7 +329,7 @@ def openMainPage(lastPage):
 
     cupom_nfce = ctk.CTkCheckBox(
         tipo_frame,
-        text="NFC-e",
+        text="NFC-e (Nota Fiscal de Consumidor Eletrônica)",
         font=("Consolas", 16),
         text_color="white",
         onvalue=1,
@@ -338,4 +352,4 @@ def openMainPage(lastPage):
     )
     MainexitButton.pack(pady=30, anchor="w")
 
-    mainPage.mainloop()
+    # IMPORTANTE: o mainloop fica fora daqui (no front / index)

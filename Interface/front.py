@@ -3,24 +3,19 @@ from PIL import Image
 from tkinter import messagebox
 from Interface.app_state import app_state
 from Interface.main import openMainPage
-import os
-# Dados de autenticação (usuário e senha)
-USUARIO_CORRETO = "admin"
-SENHA_CORRETA = "1234"
+import customtkinter as ctk
+from Interface.main import openMainPage
 
-#     # Configurações iniciais
-ctk.set_appearance_mode("light")  # Modo claro
-ctk.set_default_color_theme("green")  # Tema de cores (pode personalizar depois)
-
-
-# Janela principal
-root = ctk.CTk()
-root.title("Login")
-root.geometry("1920x1080")
-root.configure(fg_color="#f5f5f5")  # Cor de fundo clara
 def startInterface():
+    ctk.set_appearance_mode("light")
+    ctk.set_default_color_theme("green")
+
+    root = ctk.CTk()
+    # aqui quem monta toda a tela é o main.py
     openMainPage(root)
-            
+    # aqui a app roda de fato
+    root.mainloop()
+
 # resultado = None
 
 # def startInterface():
