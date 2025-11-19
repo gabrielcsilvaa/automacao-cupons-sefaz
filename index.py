@@ -5,12 +5,12 @@ from classes.CFElist import cfe_list
 # Utils
 from utils.CompanyFormater import formatCompanyCode
 from utils.csvReader import readCSV
-from utils.xml_organizer import *
+from utils.xml_organizer import analisadorXmls, apagarCSV, organizarPastas
 
 # Importando navegador
 from config.browserConfig import Chrome
 
-# Importanto função de autenticação
+# Importando função de autenticação
 from auth.validateAcess import authorize_access
 
 # INTERFACE GRÁFICA
@@ -24,13 +24,19 @@ from scripts.DTE.start import startProcess
 from scripts.DTE.company_finder import companyFinder
 from scripts.DTE.sigetWindow import enterSiget
 from scripts.DTE.Break import passBreak
-from scripts.DTE.searchCsv import downloadCsvAut, downloadCsvCancel
+
+# Versão separada para CFE e NFC-e (CSV)
+from scripts.DTE.searchCsvCfe import downloadCsvAut as downloadCsvAutCfe, downloadCsvCancel as downloadCsvCancelCfe
+from scripts.DTE.searchCsvNfce import downloadCsvAut as downloadCsvAutNfce, downloadCsvCancel as downloadCsvCancelNfce
 
 # Scripts todos os passos do Ambiente Seguro
 from scripts.AmbienteSeguro.start import loginAmbienteSeguro
 from scripts.AmbienteSeguro.enterFMeModule import enterMfeModule
 from scripts.AmbienteSeguro.company_finder import company_finder_AmbSeg
-from scripts.AmbienteSeguro.CfeQuery import cfeQuery
+
+# Versão separada para CFE e NFC-e (consulta XML)
+from scripts.AmbienteSeguro.cfeQuery import cfeQuery as cfeQueryCfe
+from scripts.AmbienteSeguro.nfceQuery import cfeQuery as cfeQueryNfce
 
 # Scripts para puxar todos os XML
 from scripts.PullXML.LinkAPI import LinkXML
@@ -47,52 +53,94 @@ acessValidator = authorize_access()  # True or False
 
 def initialize():
     try:
-
+        # Abre a interface (main.py) e só segue se o usuário clicou em EXECUTAR
         startInterface()
 
-        if app_state.next == True:
+        if app_state.next is True:
+            # Lê dados globais definidos na interface
+            inscricao_estadual = app_state.inscricao_estadual
+            mes = app_state.mes
+            ano = app_state.ano
+            # Novo campo: tipo de cupom (CFE ou NFCE)
+            tipo_cupom = getattr(app_state, "tipo_cupom", "CFE")  # default CFE se não vier nada
+
+            print(f"Inscrição: {inscricao_estadual} | Mês: {mes} | Ano: {ano} | Tipo cupom: {tipo_cupom}")
+
             driver = Chrome()
 
+            # ---------------------------
+            # 1) Fluxo DTE - gerar CSV
+            # ---------------------------
             startProcess(driver)
 
-            formatedCode = formatCompanyCode(app_state.inscricao_estadual)
-
+            formatedCode = formatCompanyCode(inscricao_estadual)
             companyFinder(driver, formatedCode)
 
             enterSiget(driver)
-
             passBreak(driver)
 
-            responseAut = downloadCsvAut(driver)
-            if responseAut == True:
+            # Escolhe qual módulo de CSV usar baseado no tipo de cupom
+            if tipo_cupom == "CFE":
+                print("Baixando CSV de CFE (Autorizados / Cancelados)...")
+                responseAut = downloadCsvAutCfe(driver)
+            else:
+                print("Baixando CSV de NFC-e (Autorizados / Cancelados)...")
+                responseAut = downloadCsvAutNfce(driver)
+
+            if responseAut is True:
                 readCSV(downloads_path, "Autorizados")
                 apagarCSV(downloads_path)
 
-            responseCancel = downloadCsvCancel(driver)
-            if responseCancel == True:
+            if tipo_cupom == "CFE":
+                responseCancel = downloadCsvCancelCfe(driver)
+            else:
+                responseCancel = downloadCsvCancelNfce(driver)
+
+            if responseCancel is True:
                 readCSV(downloads_path, "Cancelados")
                 apagarCSV(downloads_path)
 
-            # Credenciais ambiente seguro
+            # -----------------------------------
+            # 2) Login Ambiente Seguro / MFE
+            # -----------------------------------
             user = user_login.username
             password = user_login.password
 
             loginAmbienteSeguro(driver, user, password)
             enterMfeModule(driver)
-            company_finder_AmbSeg(driver, app_state.inscricao_estadual)
+            company_finder_AmbSeg(driver, inscricao_estadual)
 
-            # tem que ver a opção da janela
-            cfeQuery(driver, cfe_list.totalList[0])
+            # -----------------------------------
+            # 3) Primeira consulta para "abrir"
+            #    (usa só o primeiro cupom da lista)
+            # -----------------------------------
+            if not cfe_list.totalList:
+                error_message("Nenhum cupom encontrado na lista. Verifique o CSV gerado.")
+                driver.quit()
+                return
 
+            primeira_chave = cfe_list.totalList[0]
+
+            if tipo_cupom == "CFE":
+                cfeQueryCfe(driver, primeira_chave)
+            else:
+                cfeQueryNfce(driver, primeira_chave)
+
+            # -----------------------------------
+            # 4) Filtrar o que ainda falta baixar
+            # -----------------------------------
             filterList = analisadorXmls(cfe_list.totalList)
             linkApi = LinkXML(driver)
 
             continue_message(
-                "Processo iniciado, o nevegador será fechado, o computador poderá ser utilizado normalmente enquanto os XMLS são baixados."
+                "Processo iniciado, o navegador será fechado, "
+                "o computador poderá ser utilizado normalmente enquanto os XMLs são baixados."
             )
             driver.quit()
 
-            # Começar processo de download dos XMLS
+            # -----------------------------------
+            # 5) Começar processo de download dos XMLs (requests)
+            # -----------------------------------
             try:
                 print(filterList[:10])
                 for index, xml in enumerate(filterList):
@@ -106,9 +154,10 @@ def initialize():
                     f"Processo finalizado, {len(filterList)} XMLs foram baixados, verificar pasta."
                 )
 
-            except:
+            except Exception:
                 error_message(
-                    "Ocorreu uma instabilidade no ambiente seguro, não foi possivel baixar todos os cupons, por gentileza, reinicie o programa."
+                    "Ocorreu uma instabilidade no ambiente seguro, "
+                    "não foi possível baixar todos os cupons, por gentileza, reinicie o programa."
                 )
 
         else:
