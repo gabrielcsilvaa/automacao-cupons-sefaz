@@ -72,7 +72,7 @@ def downloadCsvAut(driver):
     
 
 def downloadCsvCancel(driver):
-    cancelTable= locateByXpath(driver,30, '/html/body/app-root/div/app-nfce/div/div/section[2]/div/div/div/ul/li[2]/a')
+    cancelTable = locateByXpath(driver,30, '/html/body/app-root/div/app-nfce/div/div/section[2]/div/div/div/ul/li[2]/a')
     cancelTable.click()
     
     time.sleep(6)
