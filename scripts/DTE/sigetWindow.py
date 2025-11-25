@@ -1,9 +1,13 @@
 from utils.driverFunctions import *
+from utils.popupHandler import *
 
 import time
 
 def enterSiget(driver):
     try:
+
+        fecharPopupDTE(driver)
+
         siget = locateByXpath(driver,30, '/html/body/my-app/div/div/div/app-home/section/div/div[2]/div/ul/li[1]')
         time.sleep(10)        
         siget.click()

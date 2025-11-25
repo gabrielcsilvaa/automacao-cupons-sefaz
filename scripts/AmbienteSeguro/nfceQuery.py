@@ -1,4 +1,5 @@
 from utils.driverFunctions import *
+from utils.popupHandler import fecharPopupAmbienteSeguro
 
 def cfeQuery(driver, cfe):    
     
@@ -9,6 +10,9 @@ def cfeQuery(driver, cfe):
     element_locator = (By.CSS_SELECTOR, "div.modal-backdrop.am-fade")
 
     # Aguarde até que a classe 'ng-hide' seja adicionada ao elemento
+    time.sleep(2)
+    fecharPopupAmbienteSeguro(driver)
+
     try:
         WebDriverWait(driver, 150).until(
             lambda driver: "ng-hide" in driver.find_element(*element_locator).get_attribute("class")
@@ -17,16 +21,17 @@ def cfeQuery(driver, cfe):
     except Exception as e:
         print("Timeout: o elemento não adquiriu a classe 'ng-hide' dentro do tempo esperado.")
         
-    time.sleep(3)
+    time.sleep(2)
+
     # Encontre a quarta <li> dentro da ul com o id 'menulist_root'
     fourth_li = driver.find_element(By.XPATH, '//*[@id="menulist_root"]/li[3]') # agora achando a li do nfce 
-    time.sleep(1)
+    time.sleep(2)
 
     # Agora encontre o link <a> dentro desse quarto <li>
     link = fourth_li.find_element(By.XPATH, '/html/body/div[3]/div[2]/div[1]/div/div/ul/li[3]/a') # localizando o link <a> dentro da li nfce
 
     link.click()
-    time.sleep(0.5)
+    time.sleep(1)
     
     cfekey = locateByXpath(driver, 30 , '//*[@id="nfceKey"]')
     

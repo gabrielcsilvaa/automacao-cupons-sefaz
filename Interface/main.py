@@ -159,8 +159,8 @@ def openMainPage(root):
         text=" LOGIN AMBIENTE SEGURO ",
         font=("Consolas", 30, "bold"),
         text_color="#25412D",
-        width=600,
-        height=50,
+        width=450,
+        height=40,
         corner_radius=6,
         fg_color='white'
     )
@@ -209,8 +209,8 @@ def openMainPage(root):
         MainLeft_frame,
         text=" DADOS DE CONSULTA ",
         font=("Consolas", 30, "bold"),
-        width=600,
-        height=50,
+        width=450,
+        height=40,
         text_color="#25412D",
         corner_radius=6,
         fg_color='white'
@@ -317,7 +317,7 @@ def openMainPage(root):
 
     cupom_cfe = ctk.CTkCheckBox(
         tipo_frame,
-        text="CFE (Cupom Fiscal Eletrônico)",
+        text="CFE",
         font=("Consolas", 16),
         text_color="white",
         onvalue=1,
@@ -329,7 +329,7 @@ def openMainPage(root):
 
     cupom_nfce = ctk.CTkCheckBox(
         tipo_frame,
-        text="NFC-e (Nota Fiscal de Consumidor Eletrônica)",
+        text="NFC-e",
         font=("Consolas", 16),
         text_color="white",
         onvalue=1,
@@ -345,9 +345,9 @@ def openMainPage(root):
         text_color='black',
         text="EXECUTAR",
         fg_color='white',
-        width=250,
-        height=50,
-        corner_radius=10,
+        width=150,
+        height=35,
+        corner_radius=8,
         command=check_and_save
     )
     MainexitButton.pack(pady=30, anchor="w")

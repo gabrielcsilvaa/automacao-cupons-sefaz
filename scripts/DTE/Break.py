@@ -28,3 +28,4 @@ def passBreak(driver):
         error.click()
     except:
         print('Sem avisos continuando')    
+        
