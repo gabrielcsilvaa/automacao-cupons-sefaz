@@ -53,5 +53,7 @@ def getXML(xml, url):
             )
 
     except Exception as e:
-        raise Exception(f"Erro ao baixar os cupons: {e}")
+        print(f"[AVISO] Falha ao baixar {xml}: {e}")
+        return False  # <- NÃO LEVANTA ERRO, SÓ CONTINUA
+
         
