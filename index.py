@@ -35,7 +35,7 @@ from scripts.AmbienteSeguro.enterFMeModule import enterMfeModule
 from scripts.AmbienteSeguro.company_finder import company_finder_AmbSeg
 
 # Versão separada para CFE e NFC-e (consulta XML)
-from scripts.AmbienteSeguro.cfeQuery import cfeQuery as cfeQueryCfe
+from scripts.AmbienteSeguro.CfeQuery import cfeQuery as cfeQueryCfe
 from scripts.AmbienteSeguro.nfceQuery import cfeQuery as cfeQueryNfce
 
 # Scripts para puxar todos os XML
