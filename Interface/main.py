@@ -204,6 +204,27 @@ def openMainPage(root):
     )
     Password_entry.pack(anchor='w', pady=5, padx=20)
 
+    # MOSTRAR SENHA CHECKBOX
+    show_password_var = ctk.BooleanVar(value=False)
+
+    def toggle_password_visibility():
+        if show_password_var.get():
+            Password_entry.configure(show="")
+        else:
+            Password_entry.configure(show="*")
+
+    show_password_checkbox = ctk.CTkCheckBox(
+        MainLeft_frame,
+        text="Mostrar senha",
+        font=("Consolas", 14),
+        text_color="white",
+        variable=show_password_var,
+        onvalue=True,
+        offvalue=False,
+        command=toggle_password_visibility
+    )
+    show_password_checkbox.pack(anchor="w", padx=22, pady=(0, 10))
+    
     # ---------- TÍTULO CONSULTA ----------
     IeTitleLabel2 = ctk.CTkLabel(
         MainLeft_frame,
@@ -317,7 +338,7 @@ def openMainPage(root):
 
     cupom_cfe = ctk.CTkCheckBox(
         tipo_frame,
-        text="CFE",
+        text="CF-e",
         font=("Consolas", 16),
         text_color="white",
         onvalue=1,
