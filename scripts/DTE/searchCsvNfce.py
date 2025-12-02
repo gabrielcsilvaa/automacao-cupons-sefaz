@@ -44,10 +44,10 @@ def downloadCsvAut(driver):
     
     if(tableValue.text != '0,00'):
         
-        valueLink = locateByXpath(driver, 500, '//*[@id="tab_emitidos"]/table/tbody[1]/tr/td[5]/div/a')# mudei para clicar no nfce valor
+        valueLink = locateByXpath(driver, 700, '//*[@id="tab_emitidos"]/table/tbody[1]/tr/td[5]/div/a')# mudei para clicar no nfce valor
         time.sleep(2)          
         valueLink.click()
-
+        
         time.sleep(10)
         
         downloadButton = locateByXpath(driver, 30, '//*[@id="ModalDet"]/div/div/div[2]/div[1]/div/div/button')
