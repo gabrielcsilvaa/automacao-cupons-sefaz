@@ -40,7 +40,7 @@ from scripts.AmbienteSeguro.nfceQuery import cfeQuery as cfeQueryNfce
 
 # Scripts para puxar todos os XML
 from scripts.PullXML.LinkAPI import LinkXML
-from scripts.PullXML.GetXML import getXML
+from scripts.PullXML.GetXML import getXML, esperar_download_e_renomear
 
 import time
 import os
@@ -130,35 +130,111 @@ def initialize():
             # 4) Filtrar o que ainda falta baixar
             # -----------------------------------
             filterList = analisadorXmls(cfe_list.totalList)
-            linkApi = LinkXML(driver)
 
+            if not filterList:
+                continue_message(
+                    "Nenhum XML pendente para download. Todos os cupons já possuem XML salvo."
+                )
+                driver.quit()
+                return
+
+            # 🔧 LIMITE DE TESTE: baixar apenas 5 cupons
+            # >>> REMOVE ESSE [:5] QUANDO FOR RODAR PRA VALER <<<
+            filterList_teste = filterList[:5]
+
+            total_para_baixar = len(filterList_teste)
+
+            # Estimativa de tempo (ajuste o valor médio se quiser)
+            # Exemplo: 5 segundos por cupom
+            tempo_medio_por_cupom = 5  # segundos
+            estimativa_segundos = total_para_baixar * tempo_medio_por_cupom
+
+            minutos, segundos = divmod(estimativa_segundos, 60)
+            horas, minutos = divmod(minutos, 60)
+
+            if horas > 0:
+                estimativa_str = f"{horas}h {minutos}min {segundos}s"
+            elif minutos > 0:
+                estimativa_str = f"{minutos}min {segundos}s"
+            else:
+                estimativa_str = f"{segundos}s"
+
+            print(f"Serão baixados {total_para_baixar} cupons.")
+            print(f"Estimativa de tempo total: {estimativa_str}")
+
+            # Aqui é onde aparece o pop-up avisando que vai começar o download
             continue_message(
-                "Processo iniciado, o navegador será fechado, "
-                "o computador poderá ser utilizado normalmente enquanto os XMLs são baixados."
+                f"Serão baixados {total_para_baixar} cupons.\n"
+                f"Estimativa de tempo total: {estimativa_str}.\n\n"
+                "O navegador será minimizado e você poderá usar o computador normalmente "
+                "enquanto os XMLs são baixados em segundo plano."
             )
-            driver.quit()
+
+            # A PARTIR DAQUI: não precisa mais ver o navegador
+            # Mantém tudo como você pediu: Chrome normal até aqui, depois minimiza
+            try:
+                driver.minimize_window()
+            except Exception:
+                pass  # se der algum erro aqui, não é crítico
 
             # -----------------------------------
-            # 5) Começar processo de download dos XMLs (requests)
+            # 5) Começar processo de download dos XMLs (via Selenium)
             # -----------------------------------
             try:
-                print(filterList[:10])
-                for index, xml in enumerate(filterList):
-                    getXML(xml, linkApi)
-                    print(f"Processando {index + 1} de {len(filterList)} Xmls...")
-                    print(xml)
+                baixados_com_sucesso = 0
+
+                for index, xml in enumerate(filterList_teste):
+                    xml = xml.strip()
+                    print(f"\n[INFO] Processando {index + 1} de {total_para_baixar} XMLs...")
+                    print(f"Chave: {xml}")
+
+                    try:
+                        # Snapshot dos arquivos atuais da pasta Downloads
+                        arquivos_antes = set(os.listdir(downloads_path))
+
+                        # Dispara o fluxo normal de consulta + clique em Download,
+                        # SEM mexer nos XPaths já existentes
+                        if tipo_cupom == "CFE":
+                            cfeQueryCfe(driver, xml)
+                        else:
+                            cfeQueryNfce(driver, xml)
+
+                        # Espera o arquivo novo aparecer e renomeia para <chave>.xml
+                        sucesso = esperar_download_e_renomear(downloads_path, arquivos_antes, xml)
+
+                        if not sucesso:
+                            print(f"[AVISO] O XML da chave {xml} pode não ter sido baixado corretamente.")
+                        else:
+                            baixados_com_sucesso += 1
+
+                    except Exception as e_loop:
+                        # Aqui a gente trata erros por cupom individualmente
+                        print(f"[AVISO] Falha ao processar a chave {xml}: {e_loop}")
+                        # segue para o próximo cupom
+                        continue
 
                 time.sleep(2)
 
                 continue_message(
-                    f"Processo finalizado, {len(filterList)} XMLs foram baixados, verificar pasta."
+                    f"Processo finalizado.\n"
+                    f"{baixados_com_sucesso} XMLs foram baixados com sucesso de um total de {total_para_baixar} tentativas.\n"
+                    "Verifique a pasta de Downloads ou as pastas organizadas pelo robô."
                 )
 
-            except Exception:
+            except Exception as e:
+                print(f"[ERRO] Durante o loop de download: {e}")
                 error_message(
-                    "Ocorreu uma instabilidade no ambiente seguro, "
-                    "não foi possível baixar todos os cupons, por gentileza, reinicie o programa."
+                    "Ocorreu uma instabilidade no Ambiente Seguro. "
+                    "Não foi possível baixar todos os cupons. "
+                    "Por gentileza, reinicie o programa."
                 )
+
+            finally:
+                # Fecha o navegador ao final de tudo
+                try:
+                    driver.quit()
+                except Exception:
+                    pass
 
         else:
             raise Exception("Programa encerrado...")
