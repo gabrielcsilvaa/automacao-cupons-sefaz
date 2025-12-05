@@ -138,11 +138,7 @@ def initialize():
                 driver.quit()
                 return
 
-            # 🔧 LIMITE DE TESTE: baixar apenas 5 cupons
-            # >>> REMOVE ESSE [:5] QUANDO FOR RODAR PRA VALER <<<
-            filterList_teste = filterList[:5]
-
-            total_para_baixar = len(filterList_teste)
+            total_para_baixar = len(filterList)
 
             # Estimativa de tempo (ajuste o valor médio se quiser)
             # Exemplo: 5 segundos por cupom
@@ -171,7 +167,6 @@ def initialize():
             )
 
             # A PARTIR DAQUI: não precisa mais ver o navegador
-            # Mantém tudo como você pediu: Chrome normal até aqui, depois minimiza
             try:
                 driver.minimize_window()
             except Exception:
@@ -183,7 +178,7 @@ def initialize():
             try:
                 baixados_com_sucesso = 0
 
-                for index, xml in enumerate(filterList_teste):
+                for index, xml in enumerate(filterList):
                     xml = xml.strip()
                     print(f"\n[INFO] Processando {index + 1} de {total_para_baixar} XMLs...")
                     print(f"Chave: {xml}")
@@ -208,9 +203,7 @@ def initialize():
                             baixados_com_sucesso += 1
 
                     except Exception as e_loop:
-                        # Aqui a gente trata erros por cupom individualmente
                         print(f"[AVISO] Falha ao processar a chave {xml}: {e_loop}")
-                        # segue para o próximo cupom
                         continue
 
                 time.sleep(2)
@@ -230,7 +223,6 @@ def initialize():
                 )
 
             finally:
-                # Fecha o navegador ao final de tudo
                 try:
                     driver.quit()
                 except Exception:
